@@ -3,8 +3,7 @@ const User = require('../models/user')
 const router = new express.Router()
 
 
-// Member tasks => get profile, get books
-// Librarian tasks => add, get, update, delete members
+// Admin(Librarian) tasks => add, get, update, delete members
 
 // Create a new member(Sign Up)
 router.post('/members',async (req,res)=>{
