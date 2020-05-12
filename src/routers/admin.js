@@ -52,8 +52,11 @@ router.patch('/members/:id', async(req,res)=>{
     }
 
     try {
-        const member = await User.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true})
-
+        const member = await User.findById(req.params.id)
+        
+        // const member = await User.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true})
+        // <- findByIdAndUpdate bypasses mongoose. It's perform direct operation on the database. -->
+        // <-- so we set a special opertion to run the validators. -->
         if (!member) {
             return res.status(404).send()
         }
