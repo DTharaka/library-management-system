@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
-const Book = mongoose.model('Book', { 
+const bookSchema = new mongoose.Schema({
     isbn: {
         type: String,
         required: true,
@@ -33,8 +33,8 @@ const Book = mongoose.model('Book', {
         required: true,
         trim: true
     }
-});
+})
 
-
+const Book = mongoose.model('Book', bookSchema);
 
 module.exports = Book

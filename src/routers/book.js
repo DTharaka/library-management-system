@@ -51,7 +51,14 @@ router.patch('/books/:id', async(req,res)=>{
     }
 
     try {
-        const book = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true})
+        const book = await Book.findById(req.params.id)
+        updates.forEach((update)=>{
+            book[update] = req.body[update]
+        })
+
+        await book.save()
+
+        // const book = await Book.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true})
 
         if (!book) {
             return res.status(404).send()

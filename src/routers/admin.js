@@ -12,7 +12,17 @@ router.post('/members',async (req,res)=>{
         await member.save()
         res.status(201).send(member)
     } catch (error) {
-        res.status(400).send(e)
+        res.status(400).send(error)
+    }
+})
+
+// Login users
+router.post('/members/login',async(req,res)=>{
+    try {
+        const member = await User.findByCredentials(req.body.email,req.body.password)
+        res.send(member)
+    } catch (error) {
+        res.status(400).send()
     }
 })
 
@@ -53,7 +63,12 @@ router.patch('/members/:id', async(req,res)=>{
 
     try {
         const member = await User.findById(req.params.id)
-        
+
+        updates.forEach((update)=>{
+            member[update] = req.body[update]
+        })
+
+        await member.save()
         // const member = await User.findByIdAndUpdate(req.params.id, req.body, {new: true,runValidators: true})
         // <- findByIdAndUpdate bypasses mongoose. It's perform direct operation on the database. -->
         // <-- so we set a special opertion to run the validators. -->
