@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -52,10 +53,27 @@ const userSchema = new mongoose.Schema({
                 throw new Error("Password can't contain 'password'")
             }   
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 })
 
-// 
+
+// Methods are accessible on instatnces (Instatnces Methods)
+userSchema.methods.generateAuthToken = async function(){
+    const member = this
+    const token = jwt.sign({_id: member._id.toString()},'this_is_a_library_management_system')
+    
+    member.tokens = member.tokens.concat({ token : token})
+    await member.save()
+    return token
+}
+
+// statics methods are accessible on model (Model Methods)
 userSchema.statics.findByCredentials = async(email,password)=>{
     const member = await User.findOne({email})
     if (!member) {

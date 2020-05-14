@@ -1,16 +1,19 @@
 const express = require('express')
 const User = require('../models/user')
+const auth =  require('../middleware/auth')
 const router = new express.Router()
 
 
 // Admin(Librarian) tasks => add, get, update, delete members
+//                        => add, delete, update books
 
 // Create a new member(Sign Up)
 router.post('/members',async (req,res)=>{
     const member = new User(req.body)
     try {
         await member.save()
-        res.status(201).send(member)
+        const token = await member.generateAuthToken()
+        res.status(201).send({member,token})
     } catch (error) {
         res.status(400).send(error)
     }
@@ -20,14 +23,15 @@ router.post('/members',async (req,res)=>{
 router.post('/members/login',async(req,res)=>{
     try {
         const member = await User.findByCredentials(req.body.email,req.body.password)
-        res.send(member)
+        const token = await member.generateAuthToken()
+        res.send({member,token})
     } catch (error) {
         res.status(400).send()
     }
 })
 
 // Read all members
-router.get('/members',async(req,res)=>{
+router.get('/members', auth, async(req,res)=>{
     try {
         const members = await User.find({})
         res.status(201).send(members)
@@ -35,6 +39,12 @@ router.get('/members',async(req,res)=>{
         res.status(500).send()
     }
 })
+
+// Read only own Profile
+// router.get('/members/me', auth, async(req,res)=>{
+//     res.send(req.member)
+// })
+
 
 // Read individual member
 router.get('/members/:id',async (req,res)=>{
